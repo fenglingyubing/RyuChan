@@ -95,11 +95,7 @@ user:
         ariaLabel: Github
         title: Github
         svg: ri:github-line
-      - href: https://twitter.com/你的Twitter用户名
-        ariaLabel: Twitter
-        title: Twitter
-        svg: ri:twitter-line
-      - href: mailto:你的邮箱@example.com
+      - href: mailto:3284602218@qq.com
         ariaLabel: Email
         title: Email
         svg: ri:mail-line
