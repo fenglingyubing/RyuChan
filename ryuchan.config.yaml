@@ -95,6 +95,14 @@ user:
         ariaLabel: Github
         title: Github
         svg: ri:github-line
+      - href: https://twitter.com/你的Twitter用户名
+        ariaLabel: Twitter
+        title: Twitter
+        svg: ri:twitter-line
+      - href: mailto:你的邮箱@example.com
+        ariaLabel: Email
+        title: Email
+        svg: ri:mail-line
   footer:
     social:
       - href: https://github.com/kobaridev
