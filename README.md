@@ -39,7 +39,6 @@
 - ✅ 高度可配置的 Banner（支持随机图、打字机效果、高度自定义）  
 - ✅ 使用 [Tailwind CSS](https://tailwindcss.com/) 与 [daisyUI](https://daisyui.com/) 构建自适应页面  
 - ✅ RSS 订阅支持  
-- ✅ 追番管理（集成 TMDB API，支持动漫追踪和评分）  
 - ✅ 网站导航（分类资源导航，支持搜索和筛选）  
 - ✅ 静态页面（About、Friends、Projects 页面）  
 - ✅ 文章增强功能（阅读统计、赞赏、分享）  
@@ -61,7 +60,9 @@ RyuChan 提供了强大的在线文章发布功能，让你无需本地开发环
 
 ### 🔐 认证与安全  
 
-使用GitHub App私钥（.pem文件）进行身份验证，确保只有授权用户可以发布内容。  
+使用GitHub App私钥（.pem文件）进行身份验证，确保只有授权用户可以发布内容。
+
+> 📖 **详细配置指南**: 查看 [GitHub App 配置文档](./docs/GITHUB_APP_SETUP.md) 了解如何创建 GitHub App 和生成私钥。
 
 ### 📱 使用流程  
 
@@ -102,20 +103,20 @@ RyuChan 提供了革命性的可视化配置编辑器，让你通过Web界面轻
 - **网站基本信息**: 标题、描述、图标、头像等  
 - **主题设置**: 浅色/深色主题、代码高亮样式  
 - **Banner配置**: 随机图API、高度设置、打字机效果  
-- **功能集成**: TMDB追番、Bilibili追番、评论系统、统计工具  
+- **功能集成**: 评论系统、统计工具  
 - **菜单导航**: 动态添加、删除、排序菜单项  
 - **社交媒体**: 侧边栏和页脚社交链接管理  
 
 ### 🚀 快速开始  
 
 1. **访问配置页面**: 浏览器打开 `/config` [4-cite-5](#4-cite-5)   
-2. **身份验证**: 导入GitHub App的.pem私钥文件  
+2. **身份验证**: 导入GitHub App的.pem私钥文件（[查看配置指南](./docs/GITHUB_APP_SETUP.md)）
 3. **可视化编辑**:   
    - 在表单中修改各项设置  
    - 上传图片资源  
    - 配置功能集成  
 4. **实时预览**: 切换预览模式查看效果  
-5. **一键保存**: 点击保存按钮，配置自动提交到GitHub  
+5. **一键保存**: 点击保存按钮，配置自动提交到GitHub
 
 ### 💡 特色优势  
 
@@ -208,21 +209,6 @@ theme:
 - 主题基于 [daisyUI](https://daisyui.com/docs/themes/) 提供的主题选项
 - 代码块主题使用 [Shiki](https://shiki.style/themes) 提供的样式
 
-### TMDB 配置 (追番功能)
-
-```
-tmdb:  
-  apiKey: "your-tmdb-api-key" # TMDB API Key (v3 auth)  
-  listId: "your-list-id" # TMDB List ID
-```
-
-### Bilibili 配置 (追番功能)
-
-```
-bilibili:  
-  uid: "your-bilibili-uid" # Bilibili 用户 ID
-```
-
 ### 菜单配置 (menu)
 
 ```
@@ -245,13 +231,6 @@ menu:
 ```
 
 ## 📄 其他页面功能
-
-### 追番页面
-
-- 集成 TMDB API 获取动漫元数据
-- 支持 Bilibili 追番列表同步
-- 实时搜索和筛选功能
-- 按类型、评分排序
 
 ### 导航页面
 
