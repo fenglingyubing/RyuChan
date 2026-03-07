@@ -1,9 +1,9 @@
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { PublishForm } from '../types'
+import type { ImageItem, PublishForm } from '../types'
 import { Calendar, Bookmark, BookOpen, Folder, Tag, Info, X } from 'lucide-react'
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown, { defaultUrlTransform } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
@@ -16,11 +16,13 @@ import 'katex/dist/katex.min.css'
 type WritePreviewProps = {
 	form: PublishForm
 	coverPreviewUrl: string | null
+	images: ImageItem[]
+	cover: ImageItem | null
 	onClose: () => void
 	slug?: string
 }
 
-export function WritePreview({ form, coverPreviewUrl, onClose }: WritePreviewProps) {
+export function WritePreview({ form, coverPreviewUrl, images, cover, onClose }: WritePreviewProps) {
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -30,6 +32,20 @@ export function WritePreview({ form, coverPreviewUrl, onClose }: WritePreviewPro
     // Estimate reading time and word count
     const wordCount = form.md.length
     const readTime = Math.ceil(wordCount / 400) + ' min'
+
+    const localImageMap = new Map<string, string>()
+
+    for (const image of images) {
+        if (image.type === 'file') {
+            localImageMap.set(`local-image:${image.id}`, image.previewUrl)
+        }
+    }
+
+    if (cover?.type === 'file') {
+        localImageMap.set(`local-image:${cover.id}`, cover.previewUrl)
+    }
+
+    const previewMarkdown = form.md.replace(/local-image:([^)\s]+)/g, match => localImageMap.get(match) || match)
 
     if (!mounted) return null
 
@@ -127,6 +143,7 @@ export function WritePreview({ form, coverPreviewUrl, onClose }: WritePreviewPro
                                     <ReactMarkdown
                                         remarkPlugins={[remarkGfm, remarkMath]}
                                         rehypePlugins={[rehypeKatex]}
+                                        urlTransform={url => (url.startsWith('blob:') ? url : defaultUrlTransform(url))}
                                         components={{
                                             code({node, inline, className, children, ...props}: any) {
                                                 const match = /language-(\w+)/.exec(className || '')
@@ -150,7 +167,7 @@ export function WritePreview({ form, coverPreviewUrl, onClose }: WritePreviewPro
                                             )
                                         }}
                                     >
-                                        {form.md}
+                                        {previewMarkdown}
                                     </ReactMarkdown>
                                 </article>
                             </div>
