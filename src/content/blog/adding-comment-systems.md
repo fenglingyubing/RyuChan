@@ -1,13 +1,13 @@
 ---
-title: Adding Comment Systems to RyuChan
+title: Adding Comment Systems to FengLing
 description: >-
   A comprehensive guide on how to integrate the Waline comment system into your
-  RyuChan blog
+  FengLing blog
 pubDate: 2025-04-15T00:00
 image: /image/image4.jpg
 draft: false
 tags:
-  - RyuChan
+  - FengLing
   - Comments
   - Waline
   - Astro
@@ -18,13 +18,13 @@ badge: Comment
 
 ## Introduction
 
-RyuChan 博客现已支持通过配置文件集中管理评论系统，无需在页面手动引入组件或硬编码参数，只需在 `ryuchan.config.yaml` 中配置即可。
+FengLing 博客现已支持通过配置文件集中管理评论系统，无需在页面手动引入组件或硬编码参数，只需在 `fengling.config.yaml` 中配置即可。
 
 ## 集中式评论系统配置
 
 ### 步骤 1：配置评论系统
 
-在 `ryuchan.config.yaml` 中找到 `comments` 配置块：
+在 `fengling.config.yaml` 中找到 `comments` 配置块：
 
 ```yaml
 comments:
@@ -59,7 +59,7 @@ comments:
 
 ### 步骤 2：自动渲染，无需手动引入
 
-你无需在页面或模板中手动引入 `<Giscus />` 或 `<Waline />` 组件，Ryuchan 已自动根据配置渲染对应评论系统。只需专注于内容创作和配置维护。
+你无需在页面或模板中手动引入 `<Giscus />` 或 `<Waline />` 组件，FengLing 已自动根据配置渲染对应评论系统。只需专注于内容创作和配置维护。
 
 ### 步骤 3：切换或禁用评论系统
 
@@ -70,7 +70,7 @@ comments:
 
 ## 进阶：自定义 Waline 组件
 
-如需自定义 Waline 组件样式或参数，可参考如下代码（已内置于 RyuChan）：
+如需自定义 Waline 组件样式或参数，可参考如下代码（已内置于 FengLing）：
 
 ```astro
 ---

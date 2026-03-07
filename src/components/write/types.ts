@@ -7,8 +7,8 @@ export type PublishForm = {
 	summary: string
 	hidden?: boolean
 	badge?: string
-	category?: string // RyuChan uses categories (array), but form might use single string or array.
-	// I'll adapt to RyuChan schema: categories: string[]
+	category?: string // FengLing uses categories (array), but form might use single string or array.
+	// I'll adapt to FengLing schema: categories: string[]
 	categories: string[]
 	fileFormat: 'md' | 'mdx' // 文件格式选择
 }

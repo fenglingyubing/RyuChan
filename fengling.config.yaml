@@ -22,7 +22,7 @@ site:
   icp_link: ''
   pages:
     home:
-      title: RyuChan's Blog
+      title: FengLing's Blog
       subtitle: 欲买桂花同载酒，终不似，少年游！
       typewriterTexts:
         - 🌸 欲买桂花同载酒，终不似，少年游！
@@ -74,7 +74,7 @@ site:
       target: _self
 github:
   owner: kobaridev
-  repo: RyuChan
+  repo: FengLing
   branch: main
   appId: 在部署端配置环境变量
   encryptKey: wudishiduomejimo

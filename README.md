@@ -5,13 +5,13 @@
 
 
 <div align="center">  
-<img alt="Ryuchan Logo" src="https://picbed.xiaozhangya.xin/blog/logo.png" width="280px">  
+<img alt="FengLing Logo" src="https://picbed.xiaozhangya.xin/blog/logo.png" width="280px">  
 </div>  
 
 
-[![license](https://badgen.net/github/license/kobaridev/RyuChan)](https://github.com/kobaridev/RyuChan/blob/main/LICENSE)&nbsp;&nbsp;&nbsp;[![release](https://badgen.net/github/release/kobaridev/RyuChan)](https://github.com/kobaridev/RyuChan/releases)  
+[![license](https://badgen.net/github/license/fenglingyubing/FengLing)](https://github.com/fenglingyubing/FengLing/blob/main/LICENSE)&nbsp;&nbsp;&nbsp;[![release](https://badgen.net/github/release/fenglingyubing/FengLing)](https://github.com/fenglingyubing/FengLing/releases)  
 
-[**🖥️ Ryuchan Demo**](https://demo.131714.xyz)  
+[**🖥️ FengLing Demo**](https://demo.131714.xyz)  
 
 ## 📷 预览  
 
@@ -47,7 +47,7 @@
 
 ## 📝 在线发布文章  
 
-RyuChan 提供了强大的在线文章发布功能，让你无需本地开发环境即可直接在浏览器中编写、预览和发布文章。  
+FengLing 提供了强大的在线文章发布功能，让你无需本地开发环境即可直接在浏览器中编写、预览和发布文章。  
 
 ### 🚀 核心功能  
 
@@ -88,7 +88,7 @@ RyuChan 提供了强大的在线文章发布功能，让你无需本地开发环
 
 ## ⚙️ 在线配置网站  
 
-RyuChan 提供了革命性的可视化配置编辑器，让你通过Web界面轻松管理网站的所有设置，无需手动编辑YAML文件。  
+FengLing 提供了革命性的可视化配置编辑器，让你通过Web界面轻松管理网站的所有设置，无需手动编辑YAML文件。  
 
 ### 🎯 核心功能  
 
@@ -156,13 +156,13 @@ npm i -g pnpm
 1. 克隆项目
 
 ```
-git clone https://github.com/kobaridev/RyuChan.git Ryuchan
+git clone https://github.com/fenglingyubing/FengLing.git FengLing
 ```
 
 1. 进入项目文件夹
 
 ```
-cd Ryuchan
+cd FengLing
 ```
 
 1. 安装依赖
@@ -184,14 +184,14 @@ pnpm run dev
 
 ## 🔧 配置
 
-Ryuchan 使用 `ryuchan.config.yaml` 作为配置文件，你可以通过在线配置编辑器或直接编辑此文件来管理网站设置。
+FengLing 使用 `fengling.config.yaml` 作为配置文件，你可以通过在线配置编辑器或直接编辑此文件来管理网站设置。
 
 ### 网站基本信息 (site)
 
 ```
 site:  
-  tab: Ryuchan # 浏览器标签栏上显示的文本  
-  title: Ryuchan # 网站的主标题  
+  tab: FengLing # 浏览器标签栏上显示的文本  
+  title: FengLing # 网站的主标题  
   description: A clean, elegant, and fast static blog template! # 网站描述，用于SEO  
   language: zh # 网站的语言代码，如"en"表示英文，"zh"表示中文  
   favicon: /favicon.ico # 网站图标路径

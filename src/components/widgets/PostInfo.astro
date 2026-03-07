@@ -59,7 +59,7 @@ const slug = url ? url.split('/').filter(Boolean).pop() : undefined;
         if (typeof window.fetchUmamiStats === 'function') {
           clearInterval(checkInterval);
           try {
-            // RyuChan assumes blog posts are at /blog/slug
+            // FengLing assumes blog posts are at /blog/slug
             // Adjust this path if your URL structure is different
             const queryPath = `/blog/${slug}`;
             

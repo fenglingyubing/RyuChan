@@ -91,7 +91,7 @@ export function ConfigPage() {
                 token,
                 GITHUB_CONFIG.OWNER,
                 GITHUB_CONFIG.REPO,
-                'ryuchan.config.yaml',
+                'fengling.config.yaml',
                 GITHUB_CONFIG.BRANCH
             )
             if (content) {
@@ -249,7 +249,7 @@ export function ConfigPage() {
             toast.loading('正在创建配置文件 Blob...', { id: toastId })
             const { sha: configSha } = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, configBase64, 'base64')
             treeItems.push({
-                path: 'ryuchan.config.yaml',
+                path: 'fengling.config.yaml',
                 mode: '100644',
                 type: 'blob',
                 sha: configSha
