@@ -80,8 +80,8 @@ github:
   encryptKey: wudishiduomejimo
 umami:
   enable: true
-  baseUrl: https://umami.131714.xyz
-  shareId: ''
+  baseUrl: https://cloud.umami.is
+  shareId: z2gT0AcfAwYI9mQN
   websiteId: 8f8b08d5-a1c5-494f-a7b6-af1f02583a16
   timezone: Asia/Shanghai
 user:
