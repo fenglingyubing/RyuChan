@@ -53,7 +53,7 @@ const slug = url ? url.split('/').filter(Boolean).pop() : undefined;
               
               const statsData = await window.fetchUmamiStats(umamiConfig.baseUrl, umamiConfig.shareId, {
                 timezone: umamiConfig.timezone,
-                pathPrefix: queryPath
+                path: queryPath
               });
               
               const pageViews = (typeof statsData.pageviews === 'object' ? statsData.pageviews.value : statsData.pageviews) || 0;

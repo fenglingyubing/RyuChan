@@ -57,12 +57,14 @@ const bannerSubtitle = pageConfig?.subtitle || "";
 
     <!-- Umami分析（自建） -->
     {
-      umamiConfig.enable && umamiConfig.websiteId && (
+     umamiConfig.enable && umamiConfig.websiteId && (
         <script
           is:inline
           defer
           src={`${umamiConfig.baseUrl}/script.js`}
           data-website-id={umamiConfig.websiteId}
+          data-auto-track="false"
+          data-exclude-hash="true"
         />
       )
     }
@@ -126,6 +128,59 @@ const bannerSubtitle = pageConfig?.subtitle || "";
           });
       })();
     </script>
+
+    {
+      umamiConfig.enable && umamiConfig.websiteId && (
+        <script is:inline>
+          (() => {
+            const TRACK_STATE_KEY = "__fenglingTrackedPath";
+            const getTrackPath = () => `${window.location.pathname}${window.location.search}`;
+
+            const trackCurrentPage = () => {
+              const path = getTrackPath();
+
+              if (window[TRACK_STATE_KEY] === path) {
+                return true;
+              }
+
+              if (typeof window.umami?.track !== "function") {
+                return false;
+              }
+
+              window.umami.track((props) => ({
+                ...props,
+                url: path,
+                title: document.title,
+              }));
+              window[TRACK_STATE_KEY] = path;
+              return true;
+            };
+
+            const scheduleTrack = () => {
+              if (trackCurrentPage()) {
+                return;
+              }
+
+              let retries = 0;
+              const timer = window.setInterval(() => {
+                retries += 1;
+                if (trackCurrentPage() || retries >= 50) {
+                  window.clearInterval(timer);
+                }
+              }, 100);
+            };
+
+            if (document.readyState === "loading") {
+              document.addEventListener("DOMContentLoaded", scheduleTrack, { once: true });
+            } else {
+              scheduleTrack();
+            }
+
+            document.addEventListener("astro:page-load", scheduleTrack);
+          })();
+        </script>
+      )
+    }
   </head>
 
   <!-- 移除上边距，让Banner从顶部开始 -->
