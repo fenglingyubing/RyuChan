@@ -3,6 +3,21 @@
   const cacheKeyPrefix = 'umami-share-cache-';
   const cacheTTL = 3600_000; // 1h
 
+  function normalizeBaseUrl(baseUrl) {
+    return String(baseUrl || '').replace(/\/+$/, '');
+  }
+
+  function getApiBaseCandidates(baseUrl) {
+    const normalizedBaseUrl = normalizeBaseUrl(baseUrl);
+    const candidates = [normalizedBaseUrl];
+
+    if (/cloud\.umami\.is$/i.test(new URL(normalizedBaseUrl).host)) {
+      candidates.unshift(`${normalizedBaseUrl}/analytics/us`);
+    }
+
+    return [...new Set(candidates)];
+  }
+
   async function fetchShareData(baseUrl, shareId) {
     const key = cacheKeyPrefix + shareId;
     const cached = localStorage.getItem(key);
@@ -18,13 +33,26 @@
       }
     }
     console.log('[Umami] Fetching new token for', shareId);
-    const res = await fetch(`${baseUrl}/api/share/${shareId}`);
-    if (!res.ok) {
-      throw new Error('获取 Umami 分享信息失败');
+    let lastError = null;
+
+    for (const apiBaseUrl of getApiBaseCandidates(baseUrl)) {
+      try {
+        const res = await fetch(`${apiBaseUrl}/api/share/${shareId}`);
+        if (!res.ok) {
+          lastError = new Error(`获取 Umami 分享信息失败: ${res.status}`);
+          continue;
+        }
+
+        const data = await res.json();
+        const value = { ...data, apiBaseUrl };
+        localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), value }));
+        return value;
+      } catch (error) {
+        lastError = error;
+      }
     }
-    const data = await res.json();
-    localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), value: data }));
-    return data;
+
+    throw lastError || new Error('获取 Umami 分享信息失败');
   }
 
   /**
@@ -60,20 +88,20 @@
    */
   global.fetchUmamiStats = async function (baseUrl, shareId, queryParams) {
     async function doFetch(isRetry = false) {
-      const { websiteId, token } = await global.getUmamiShareData(baseUrl, shareId);
+      const { websiteId, token, apiBaseUrl } = await global.getUmamiShareData(baseUrl, shareId);
       const currentTimestamp = Date.now();
       
       // 构建参数，移除默认的 unit: 'hour'，只在 queryParams 没有指定时使用默认值
-      const params = new URLSearchParams({
+      const paramsObject = {
         startAt: 0,
         endAt: currentTimestamp,
-        // unit: 'hour', // 暂时移除，视情况而定
-        timezone: 'Asia/Shanghai',
-        compare: false,
-        ...queryParams
-      });
+        ...queryParams,
+      };
+      delete paramsObject.timezone;
+      delete paramsObject.compare;
+      const params = new URLSearchParams(paramsObject);
       
-      const statsUrl = `${baseUrl}/api/websites/${websiteId}/stats?${params.toString()}`;
+      const statsUrl = `${apiBaseUrl}/api/websites/${websiteId}/stats?${params.toString()}`;
       console.log('[Umami] Fetching stats:', statsUrl);
       
       const res = await fetch(statsUrl, {
