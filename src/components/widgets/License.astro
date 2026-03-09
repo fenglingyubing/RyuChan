@@ -269,11 +269,11 @@ const socialLinks = [
         if (typeof window.fetchUmamiStats === 'function') {
           clearInterval(checkInterval);
           try {
-            const queryPath = `/blog/${slug}/`;
+            const queryPath = `/blog/${slug}`;
             
             const statsData = await window.fetchUmamiStats(umamiConfig.baseUrl, umamiConfig.shareId, {
               timezone: umamiConfig.timezone,
-              path: queryPath
+              pathPrefix: queryPath
             });
             
             const pageViews = (typeof statsData.pageviews === 'object' ? statsData.pageviews.value : statsData.pageviews) || 0;
