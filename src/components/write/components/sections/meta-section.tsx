@@ -7,9 +7,10 @@ import { useState } from 'react'
 type MetaSectionProps = {
 	delay?: number
 	categories?: string[]
+	tags?: string[]
 }
 
-export function MetaSection({ delay = 0, categories = [] }: MetaSectionProps) {
+export function MetaSection({ delay = 0, categories = [], tags = [] }: MetaSectionProps) {
 	const { form, updateForm } = useWriteStore()
 	// 如果当前选中的分类不在预设列表中，且有值，则默认为自定义模式
 	const [isCustomCategory, setIsCustomCategory] = useState(() => {
@@ -56,7 +57,7 @@ export function MetaSection({ delay = 0, categories = [] }: MetaSectionProps) {
 				/>
 
 				<div className="text-xs font-medium text-base-content/70">标签</div>
-				<TagInput tags={form.tags} onChange={tags => updateForm({ tags })} />
+				<TagInput tags={form.tags} availableTags={tags} onChange={tags => updateForm({ tags })} />
 
 				<div className="text-xs font-medium text-base-content/70">分类</div>
 				{categories.length > 0 && !isCustomCategory ? (

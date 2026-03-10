@@ -5,14 +5,15 @@ import { ANIMATION_DELAY, INIT_DELAY } from '@/consts'
 
 type WriteSidebarProps = {
 	categories?: string[]
+	tags?: string[]
 }
 
-export function WriteSidebar({ categories = [] }: WriteSidebarProps) {
+export function WriteSidebar({ categories = [], tags = [] }: WriteSidebarProps) {
 	return (
 		<div className='w-full max-w-[320px] space-y-6'>
 			<div className='grid grid-cols-1 gap-6'>
 				<CoverSection delay={INIT_DELAY + ANIMATION_DELAY * 0} />
-				<MetaSection delay={INIT_DELAY + ANIMATION_DELAY * 1} categories={categories} />
+				<MetaSection delay={INIT_DELAY + ANIMATION_DELAY * 1} categories={categories} tags={tags} />
 			</div>
 			<ImagesSection delay={INIT_DELAY + ANIMATION_DELAY * 2} />
 		</div>

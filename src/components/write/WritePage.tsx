@@ -12,9 +12,10 @@ import { useLoadBlog } from './hooks/use-load-blog'
 
 type WritePageProps = {
     categories?: string[]
+    tags?: string[]
 }
 
-export default function WritePage({ categories = [] }: WritePageProps) {
+export default function WritePage({ categories = [], tags = [] }: WritePageProps) {
     const { form, cover, images, reset } = useWriteStore()
     const { isPreview, closePreview } = usePreviewStore()
     const [slug, setSlug] = useState<string | null>(null)
@@ -67,7 +68,7 @@ export default function WritePage({ categories = [] }: WritePageProps) {
                 <>
                     <div className='flex flex-col md:flex-row h-full justify-center gap-6 px-4 md:px-6 pt-24 pb-12'>
                         <WriteEditor />
-                        <WriteSidebar categories={categories} />
+                        <WriteSidebar categories={categories} tags={tags} />
                     </div>
 
                     <WriteActions />
