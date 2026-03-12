@@ -5,6 +5,24 @@ import { useRef } from 'react'
 
 const defaultText = 'text'
 
+function isCodeBlockShortcut(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+	const nativeEvent = e.nativeEvent as KeyboardEvent & { keyCode?: number; which?: number }
+	const keyCode = nativeEvent.keyCode ?? nativeEvent.which
+
+	return Boolean(
+		(e.ctrlKey || e.metaKey)
+		&& !e.altKey
+		&& (
+			e.code === 'Quote'
+			|| e.key === "'"
+			|| e.key === '"'
+			|| e.key === 'Dead'
+			|| e.key === 'Process'
+			|| keyCode === 222
+		),
+	)
+}
+
 export function WriteEditor() {
 	const { form, updateForm, images, addFiles } = useWriteStore()
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -27,6 +45,40 @@ export function WriteEditor() {
 				textarea.setSelectionRange(selectionStart + text.length, selectionStart + text.length)
 				textarea.focus()
 			}, 0)
+		}
+	}
+
+	const replaceSelection = (text: string, selectionStartOffset?: number, selectionEndOffset?: number) => {
+		const textarea = textareaRef.current
+		if (!textarea) return
+
+		const { selectionStart, selectionEnd } = textarea
+		textarea.focus()
+		textarea.setRangeText(text, selectionStart, selectionEnd, 'end')
+		updateForm({ md: textarea.value })
+
+		if (selectionStartOffset !== undefined) {
+			const start = selectionStart + selectionStartOffset
+			const end = selectionEndOffset === undefined ? start : selectionStart + selectionEndOffset
+			setTimeout(() => {
+				textarea.setSelectionRange(start, end)
+				textarea.focus()
+			}, 0)
+		}
+	}
+
+	const insertCodeBlock = () => {
+		const textarea = textareaRef.current
+		if (!textarea) return
+
+		const { selectionStart, selectionEnd, value } = textarea
+		const selectedText = value.substring(selectionStart, selectionEnd)
+
+		if (selectedText) {
+			replaceSelection(`\`\`\`\n${selectedText}\n\`\`\``)
+		} else {
+			const placeholder = 'code'
+			replaceSelection(`\`\`\`\n${placeholder}\n\`\`\``, 4, 4 + placeholder.length)
 		}
 	}
 
@@ -100,6 +152,13 @@ export function WriteEditor() {
 				const urlStart = selectionStart + text.length + 3
 				textarea.setSelectionRange(urlStart, urlStart + 3)
 			}, 0)
+			return
+		}
+
+		// Ctrl/Cmd + ': Insert code block
+		if (isCodeBlockShortcut(e)) {
+			e.preventDefault()
+			insertCodeBlock()
 			return
 		}
 
