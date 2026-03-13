@@ -9,6 +9,7 @@ tags:
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 ```java
 class Solution {
@@ -60,7 +61,7 @@ while(fast != null && fast.next != null){
 - 对偶数长度，slow 最后停在后半段起点
 - 对奇数长度，slow 最后停在正中间节点
 
-```
+```java
 if(fast != null){
       slow = slow.next;
 }
@@ -78,7 +79,7 @@ ListNode prev = null;
 ```
 反转后半段列表
 
-```
+```java
 while(prev != null){
       if(head.val != prev.val){
                 return false;
