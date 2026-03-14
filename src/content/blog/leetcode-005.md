@@ -1,5 +1,5 @@
 ---
-title: 会文链表
+title: 回文链表
 description: LeetCode刷题第五天
 pubDate: 2026-03-13T09:03
 image: /images/leetcode-005/cec7f017a7e8ae2b.png
