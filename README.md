@@ -182,6 +182,11 @@ pnpm run search:index
 pnpm run dev
 ```
 
+### 构建命令说明
+
+- `pnpm build`：默认快速构建，适合 Vercel 部署；不会再触发 `@playform/compress` 对历史图片做全量压缩
+- `pnpm run build:compress`：本地或独立 CI 使用，显式开启 `@playform/compress`，用于生成带压缩的发布产物
+
 ## 🔧 配置
 
 FengLing 使用 `fengling.config.yaml` 作为配置文件，你可以通过在线配置编辑器或直接编辑此文件来管理网站设置。

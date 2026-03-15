@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { toast } from 'sonner'
-import { hashFileSHA256 } from '@/lib/file-utils'
+import { formatFileSize, hashFileSHA256, optimizeImageForUpload } from '@/lib/file-utils'
 import { loadBlog } from '@/lib/load-blog'
 import type { PublishForm, ImageItem } from '../types'
 import { formatDateTimeLocal } from '@/lib/utils'
@@ -79,6 +79,8 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 		const arr = Array.from(files).filter(f => f.type.startsWith('image/'))
 		if (arr.length === 0) return []
 
+		const toastId = toast.loading(arr.length > 1 ? `正在优化 ${arr.length} 张图片...` : '正在优化图片...')
+
 		const existingHashes = new Map<string, ImageItem>(
 			images
 				.filter((it): it is Extract<ImageItem, { type: 'file'; hash?: string }> => it.type === 'file' && (it as any).hash)
@@ -87,8 +89,9 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 
 		const computed = await Promise.all(
 			arr.map(async file => {
-				const hash = await hashFileSHA256(file)
-				return { file, hash }
+				const optimized = await optimizeImageForUpload(file)
+				const hash = await hashFileSHA256(optimized.file)
+				return { ...optimized, hash }
 			})
 		)
 
@@ -111,17 +114,27 @@ export const useWriteStore = create<WriteStore>((set, get) => ({
 
 		// 处理新图片
 		if (unique.length > 0) {
-			const newItems: ImageItem[] = unique.map(({ file, hash }) => {
+			const newItems: ImageItem[] = unique.map(({ file, hash, originalSize, optimizedSize, wasCompressed }) => {
 				const id = Math.random().toString(36).slice(2, 10)
 				const previewUrl = URL.createObjectURL(file)
 				const filename = file.name
-				return { id, type: 'file', file, previewUrl, filename, hash }
+				return { id, type: 'file', file, previewUrl, filename, hash, originalSize, optimizedSize, wasCompressed }
 			})
 
 			set(state => ({ images: [...newItems, ...state.images] }))
 			resultImages.push(...newItems)
 		} else if (resultImages.length === 0) {
-			toast.info('图片已存在，不重复添加')
+			toast.info('图片已存在，不重复添加', { id: toastId })
+			return resultImages
+		}
+
+		const compressedCount = unique.filter(item => item.wasCompressed && item.optimizedSize < item.originalSize).length
+		const savedBytes = unique.reduce((total, item) => total + Math.max(0, item.originalSize - item.optimizedSize), 0)
+
+		if (compressedCount > 0 && savedBytes > 0) {
+			toast.success(`已压缩 ${compressedCount} 张图片，节省 ${formatFileSize(savedBytes)}`, { id: toastId })
+		} else {
+			toast.success(unique.length > 0 ? '图片已加入列表' : '图片已处理完成', { id: toastId })
 		}
 
 		return resultImages

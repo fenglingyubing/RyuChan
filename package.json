@@ -6,9 +6,10 @@
     "dev": "astro dev",
     "start": "astro dev",
     "check": "astro check",
-    "build": "astro check && astro build && pagefind --site dist && cpy 'dist/pagefind/**' public/pagefind",
+    "build": "node ./scripts/build-site.mjs",
+    "build:compress": "node ./scripts/build-site.mjs --compress",
     "search:clean": "rimraf public/pagefind",
-    "search:index": "npm run build && cpy 'dist/pagefind/**' public/pagefind",
+    "search:index": "pnpm run build",
     "preview": "astro preview",
     "astro": "astro"
   },

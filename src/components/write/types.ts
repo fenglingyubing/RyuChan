@@ -13,4 +13,16 @@ export type PublishForm = {
 	fileFormat: 'md' | 'mdx' // 文件格式选择
 }
 
-export type ImageItem = { id: string; type: 'url'; url: string } | { id: string; type: 'file'; file: File; previewUrl: string; filename: string; hash?: string }
+export type ImageItem =
+	| { id: string; type: 'url'; url: string }
+	| {
+			id: string
+			type: 'file'
+			file: File
+			previewUrl: string
+			filename: string
+			hash?: string
+			originalSize?: number
+			optimizedSize?: number
+			wasCompressed?: boolean
+		}

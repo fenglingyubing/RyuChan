@@ -1,8 +1,9 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useWriteStore } from '../../stores/write-store'
+import { formatFileSize } from '@/lib/file-utils'
 
 type ImagesSectionProps = {
 	delay?: number
@@ -20,6 +21,9 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 			<div className='flex items-center justify-between'>
 				<h2 className='text-sm font-bold text-primary'>图片管理</h2>
 			</div>
+			<p className='mt-2 text-xs leading-5 text-base-content/60'>
+				上传的大图会先在浏览器中自动压缩为更适合发布的格式，再提交到 GitHub，减少线上部署时的重复处理。
+			</p>
 
 			<div className='mt-3 flex items-center gap-2'>
 				<input
@@ -77,6 +81,11 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 					const src = isUrl ? item.url : item.previewUrl
 					const markdown = isUrl ? `![](${item.url})` : `![](local-image:${item.id})`
 					const isCover = coverId === item.id
+					const sizeLabel = !isUrl && item.optimizedSize ? formatFileSize(item.optimizedSize) : null
+					const savedPercent =
+						!isUrl && item.wasCompressed && item.originalSize && item.optimizedSize && item.originalSize > item.optimizedSize
+							? Math.round((1 - item.optimizedSize / item.originalSize) * 100)
+							: 0
 
 					return (
 						<div
@@ -92,6 +101,8 @@ export function ImagesSection({ delay = 0 }: ImagesSectionProps) {
 								}}
 							/>
 							{isCover && <div className='absolute top-1 left-1 rounded-md bg-primary px-1.5 py-0.5 text-primary-content shadow text-[10px]'>封面</div>}
+							{sizeLabel && <div className='absolute bottom-1 left-1 rounded-md bg-black/65 px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm'>{sizeLabel}</div>}
+							{savedPercent > 0 && <div className='absolute bottom-1 right-1 rounded-md bg-success/90 px-1.5 py-0.5 text-[10px] font-semibold text-success-content shadow-sm'>-{savedPercent}%</div>}
 							<div className='absolute top-1 right-1 hidden group-hover:flex'>
 								<button type='button' className='rounded-md bg-base-100/80 px-1.5 py-0.5 shadow hover:bg-base-100 text-base-content' onClick={() => deleteImage(item.id)}>
 									×

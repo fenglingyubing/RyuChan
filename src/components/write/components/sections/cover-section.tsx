@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import { useWriteStore } from '../../stores/write-store'
+import { formatFileSize } from '@/lib/file-utils'
 
 type CoverSectionProps = {
 	delay?: number
@@ -12,20 +13,21 @@ type CoverSectionProps = {
 export function CoverSection({ delay = 0 }: CoverSectionProps) {
 	const { images, setCover, cover, addFiles } = useWriteStore()
 	const fileInputRef = useRef<HTMLInputElement>(null)
-    const [urlInput, setUrlInput] = useState('')
+	const [urlInput, setUrlInput] = useState('')
 
 	const coverPreviewUrl = cover ? (cover.type === 'url' ? cover.url : cover.previewUrl) : null
+	const coverSavedBytes = cover?.type === 'file' && cover.originalSize && cover.optimizedSize ? Math.max(0, cover.originalSize - cover.optimizedSize) : 0
 
-    const handleUrlSubmit = () => {
-        if (!urlInput.trim()) return
-        setCover({
-            id: Date.now().toString(),
-            type: 'url',
-            url: urlInput.trim()
-        })
-        setUrlInput('')
-        toast.success('已设置封面')
-    }
+	const handleUrlSubmit = () => {
+		if (!urlInput.trim()) return
+		setCover({
+			id: Date.now().toString(),
+			type: 'url',
+			url: urlInput.trim(),
+		})
+		setUrlInput('')
+		toast.success('已设置封面')
+	}
 
 	const handleCoverDrop = async (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault()
@@ -93,8 +95,11 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 	return (
 		<motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay }} className='card bg-base-100 border border-base-200 shadow-sm p-4 relative'>
 			<div className="flex items-center justify-between mb-3">
-                <h2 className='text-sm font-bold text-primary'>封面</h2>
-            </div>
+				<h2 className='text-sm font-bold text-primary'>封面</h2>
+			</div>
+			<p className='mb-3 text-xs leading-5 text-base-content/60'>
+				本地封面图会先在浏览器中压缩后再上传，优先减少大图对仓库和部署构建的影响。
+			</p>
 
 			<input ref={fileInputRef} type='file' accept='image/*' className='hidden' onChange={handleFileChange} />
 			<div
@@ -111,20 +116,26 @@ export function CoverSection({ delay = 0 }: CoverSectionProps) {
 					</div>
 				)}
 			</div>
-            
-            <div className="flex gap-2 mt-3">
-                <input 
-                    type="text" 
-                    className="input input-sm input-bordered w-full text-xs" 
-                    placeholder="输入图片 URL"
-                    value={urlInput}
-                    onChange={e => setUrlInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleUrlSubmit()}
-                />
-                <button className="btn btn-sm btn-primary btn-square" onClick={handleUrlSubmit}>
-                    <span className="text-xs">OK</span>
-                </button>
-            </div>
+
+			{cover?.type === 'file' && cover.wasCompressed && coverSavedBytes > 0 && (
+				<div className='mt-3 rounded-xl border border-success/20 bg-success/10 px-3 py-2 text-xs text-success'>
+					封面已在本地压缩，节省 {formatFileSize(coverSavedBytes)}，当前文件 {formatFileSize(cover.optimizedSize || 0)}。
+				</div>
+			)}
+
+			<div className="flex gap-2 mt-3">
+				<input
+					type="text"
+					className="input input-sm input-bordered w-full text-xs"
+					placeholder="输入图片 URL"
+					value={urlInput}
+					onChange={e => setUrlInput(e.target.value)}
+					onKeyDown={e => e.key === 'Enter' && handleUrlSubmit()}
+				/>
+				<button className="btn btn-sm btn-primary btn-square" onClick={handleUrlSubmit}>
+					<span className="text-xs">OK</span>
+				</button>
+			</div>
 		</motion.div>
 	)
 }

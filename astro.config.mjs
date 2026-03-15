@@ -15,6 +15,9 @@ import updateConfig from "./src/integration/updateConfig.ts";
 
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
+const isVercelBuild = process.env.VERCEL === "1" || process.env.VERCEL === "true";
+const shouldCompressBuild = process.env.ENABLE_BUILD_COMPRESS === "true" && !isVercelBuild;
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -43,7 +46,7 @@ export default defineConfig({
     tailwind({
       configFile: "./tailwind.config.mjs",
     }),
-    playformCompress(),
+    ...(shouldCompressBuild ? [playformCompress()] : []),
   ],
   markdown: {
     shikiConfig: {
