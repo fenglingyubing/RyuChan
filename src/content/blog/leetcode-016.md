@@ -9,6 +9,7 @@ tags:
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 找到字符串中所有字母异位词
 
@@ -30,6 +31,40 @@ categories:
 - `window` 记录当前窗口中每个字符出现多少次
 - 窗口长度始终保持为 `p.length()`
 - 当 `window` 和 `need` 完全相等时，说明当前窗口就是一个字母异位词
+
+## 完整代码
+```java
+class Solution {
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        int n = s.length(), m = p.length();
+        if (n < m) {
+            return result;
+        }
+
+        int[] need = new int[26];
+        int[] window = new int[26];
+
+        for (char c : p.toCharArray()) {
+            need[c - 'a']++;
+        }
+
+        for (int right = 0; right < n; right++) {
+            window[s.charAt(right) - 'a']++;
+
+            if (right >= m) {
+                window[s.charAt(right - m) - 'a']--;
+            }
+
+            if (Arrays.equals(need, window)) {
+                result.add(right - m + 1);
+            }
+        }
+
+        return result;
+    }
+}
+```
 
 ## 关键代码
 
