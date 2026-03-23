@@ -9,6 +9,7 @@ tags:
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 和为 K 的子数组
 
@@ -40,7 +41,7 @@ $Sum(j, i) = preSum[i] - preSum[j-1]$
 
 ## 代码如下：
 
-```
+```java
 class Solution {
     public int subarraySum(int[] nums, int k) {
         Map<Integer,Integer> map = new HashMap<>();
