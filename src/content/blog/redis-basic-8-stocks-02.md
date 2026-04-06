@@ -9,6 +9,7 @@ tags:
   - 八股
 categories:
   - 八股
+badge: ''
 ---
 
 # Java 面试专项：Redis 常见面试题总结（上）
