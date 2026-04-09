@@ -6,9 +6,10 @@ image: /images/leetcode-040/b3b5902eda035852.webp
 draft: false
 tags:
   - LeetCode
-  - 八股
+  - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 对称二叉树（Java）
 
