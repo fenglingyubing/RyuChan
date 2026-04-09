@@ -6,9 +6,10 @@ image: /images/leetcode-039/eb575aa2da5ac2eb.webp
 draft: false
 tags:
   - LeetCode
-  - 八股
+  - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 翻转二叉树（Java）
 
