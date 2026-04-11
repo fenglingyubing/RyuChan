@@ -2,12 +2,14 @@
 title: 二叉搜索树中的第K小的元素
 description: leetcode刷题第二十九天
 pubDate: 2026-04-10T09:10
+image: /images/leetcode-046/23b42354e1d2ed97.webp
 draft: false
 tags:
   - LeetCode
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 二叉搜索树中第 K 小的元素（Java）
 
