@@ -2,12 +2,14 @@
 title: 验证平衡二叉树
 description: leetcode刷题第二十九天
 pubDate: 2026-04-10T08:51
+image: /images/leetcode-045/0d2c848ae303a32a.webp
 draft: false
 tags:
   - LeetCode
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 验证二叉搜索树（Java）
 
