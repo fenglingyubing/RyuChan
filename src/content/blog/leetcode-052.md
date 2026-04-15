@@ -1,6 +1,6 @@
 ---
 title: 二叉树中的最大路径和
-description: ''
+description: leetcode刷题第三十二
 pubDate: 2026-04-14T13:13
 image: /images/leetcode-052/4ec8263888233751.webp
 draft: false
@@ -9,6 +9,7 @@ tags:
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # 124. 二叉树中的最大路径和
 
