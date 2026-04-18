@@ -1,6 +1,6 @@
 ---
 title: 实现Trie
-description: ''
+description: leetcode刷题第三十五天
 pubDate: 2026-04-18T11:11
 image: /images/leetcode-056/64289a25771d67a7.webp
 draft: false
