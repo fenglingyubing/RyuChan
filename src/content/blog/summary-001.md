@@ -9,12 +9,13 @@ tags:
   - LeetCode
 categories:
   - LeetCode
+badge: ''
 ---
 回溯算法总结
 回溯的核心思想
 回溯本质是DFS + 状态恢复，解决"选择"问题：
 
-
+```java
 for 选择 in 当前可选列表:
     做选择
     backtrack(下一层)
@@ -37,3 +38,4 @@ private void backtrack(...) {
         }
     }
 }
+```
