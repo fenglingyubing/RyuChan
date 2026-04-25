@@ -1,141 +1,217 @@
 ---
-title: 搜索插入位置
-description: leetcode刷题第三十九天
+title: N 皇后
+description: leetcode刷题第三十八天
 pubDate: 2026-04-25T10:47
-image: /images/leetcode-065/11ec81bb6a6d6fad.webp
+image: /images/leetcode-065/41a7e9a9a4bdd5c8.webp
 draft: false
 tags:
   - LeetCode
   - 感悟
-categories: []
+categories:
+  - LeetCode
+badge: ''
 ---
-# 35. 搜索插入位置
+# 51. N 皇后
 
 ## 问题描述
 
-给定一个**排序数组**和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+按照国际象棋的规则，皇后可以攻击与之处在同一行、同一列或同一斜线上的棋子。
 
-**要求**：必须使用时间复杂度为 O(log n) 的算法。
+**n 皇后问题**：将 n 个皇后放置在 n×n 的棋盘上，使皇后彼此之间不能相互攻击。
+
+返回所有不同的解决方案。每种方案用 'Q' 和 '.' 表示皇后和空位。
 
 **示例：**
 ```
-输入：nums = [1,3,5,6], target = 5
-输出：2
-
-输入：nums = [1,3,5,6], target = 2
-输出：1  （2应该插入在索引1的位置）
-
-输入：nums = [1,3,5,6], target = 7
-输出：4  （7应该插入在末尾）
-
-输入：nums = [1,3,5,6], target = 0
-输出：0  （0应该插入在开头）
+输入：n = 4
+输出：[[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+解释：有两种解决方案：
+方案1：          方案2：
+Q . . .         . . Q .
+. . . Q         Q . . .
+. Q . .         . . . Q
+. . . Q         . Q . .
 ```
 
 ---
 
 ## 问题分析
 
-### 关键信息
+### 核心约束
 
-1. **排序数组**：数组已经有序，这是二分查找的前提
-2. **O(log n)**：必须使用二分查找
-3. **插入位置**：目标不存在时，返回它应该插入的位置
+皇后之间不能相互攻击，意味着：
+- **同一行**只能有一个皇后
+- **同一列**只能有一个皇后
+- **同一斜线**只能有一个皇后（对角线和反对角线）
 
-### 核心思路
+### 核心思想
 
-二分查找的标准模板：
+回溯的经典应用：**按行放置**。
+
+关键洞察：**每行必然有且仅有一个皇后**（因为两个皇后不能在同一行）
+
+因此，我们只需要决定**每行的皇后放在哪一列**。
+
+---
+
+## 解题思路
+
+### 状态表示
+
+```java
+List<List<String>> result = new ArrayList<>();  // 存储所有解决方案
+List<String> path = new ArrayList<>();          // 当前方案，如 ["Q...", ".Q.."]
+```
+
+### 回溯框架
 
 ```
-left = 0, right = n - 1
+对于第 row 行（从0到n-1）：
+    尝试将皇后放在第 col 列（从0到n-1）
+    如果 (row, col) 位置合法（不受之前皇后攻击）：
+        放置皇后
+        递归处理第 row+1 行
+        撤销皇后
+```
 
-while (left <= right) {
-    mid = (left + right) / 2
+### 合法性判断
 
-    if (nums[mid] == target) {
-        return mid  // 找到目标
-    } else if (nums[mid] < target) {
-        left = mid + 1  // 目标在右半部分
-    } else {
-        right = mid - 1  // 目标在左半部分
-    }
+对于位置 (row, col)，检查是否受到已有皇后攻击：
+
+```java
+// 1. 检查同列是否有皇后
+for (int i = 0; i < row; i++) {
+    if (board[i].charAt(col) == 'Q') return false;
 }
 
-return left  // left 就是插入位置
+// 2. 检查左上对角线 (row-1, col-1), (row-2, col-2), ...
+for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+    if (board[i].charAt(j) == 'Q') return false;
+}
+
+// 3. 检查右上对角线 (row-1, col+1), (row-2, col+2), ...
+for (int i = row - 1, j = col + 1; i >= 0 && j < n; i--, j++) {
+    if (board[i].charAt(j) == 'Q') return false;
+}
 ```
-
-### 为什么返回 left？
-
-当循环结束时：
-- `left > right`
-- 所有小于 target 的元素都在 left 左侧
-- `left` 就是 target 应该插入的位置
 
 ---
 
 ## Java 代码实现
 
-### 解法一：标准二分查找
+### 解法一：标准回溯
 
 ```java
 class Solution {
-    public int searchInsert(int[] nums, int target) {
-        int left = 0;
-        int right = nums.length - 1;
+    private List<List<String>> result = new ArrayList<>();
+    private Set<Integer> cols = new HashSet<>();      // 记录已使用的列
+    private Set<Integer> diag1 = new HashSet<>();    // 记录已使用的对角线 (row+col)
+    private Set<Integer> diag2 = new HashSet<>();    // 记录已使用的反对角线 (row-col)
 
-        while (left <= right) {
-            int mid = left + (right - left) / 2;  // 防止溢出
+    public List<List<String>> solveNQueens(int n) {
+        char[][] board = new char[n][n];
+        for (char[] row : board) {
+            Arrays.fill(row, '.');
+        }
+        backtrack(board, 0);
+        return result;
+    }
 
-            if (nums[mid] == target) {
-                return mid;
-            } else if (nums[mid] < target) {
-                left = mid + 1;
-            } else {
-                right = mid - 1;
+    private void backtrack(char[][] board, int row) {
+        int n = board.length;
+
+        // 终止条件：所有行都处理完
+        if (row == n) {
+            List<String> solution = new ArrayList<>();
+            for (char[] r : board) {
+                solution.add(new String(r));
             }
+            result.add(solution);
+            return;
         }
 
-        // 循环结束时，left 就是插入位置
-        return left;
+        // 遍历当前行的所有列
+        for (int col = 0; col < n; col++) {
+            // 剪枝：检查位置是否合法
+            if (cols.contains(col)) continue;                                    // 同列有皇后
+            if (diag1.contains(row + col)) continue;                            // 主对角线有皇后
+            if (diag2.contains(row - col)) continue;                            // 副对角线有皇后
+
+            // 做选择
+            board[row][col] = 'Q';
+            cols.add(col);
+            diag1.add(row + col);
+            diag2.add(row - col);
+
+            // 递归处理下一行
+            backtrack(board, row + 1);
+
+            // 撤销选择
+            board[row][col] = '.';
+            cols.remove(col);
+            diag1.remove(row + col);
+            diag2.remove(row - col);
+        }
     }
 }
 ```
 
-### 解法二：左边界二分查找
+### 解法二：简化版（不使用HashSet）
 
 ```java
 class Solution {
-    public int searchInsert(int[] nums, int target) {
-        int left = 0;
-        int right = nums.length;  // 注意：right = n，不是 n-1
+    private List<List<String>> result = new ArrayList<>();
 
-        while (left < right) {  // 注意：是 <，不是 <=
-            int mid = left + (right - left) / 2;
-
-            if (nums[mid] < target) {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
+    public List<List<String>> solveNQueens(int n) {
+        char[][] board = new char[n][n];
+        for (char[] row : board) {
+            Arrays.fill(row, '.');
         }
-
-        return left;
+        backtrack(board, 0);
+        return result;
     }
-}
-```
 
-### 解法三：直接遍历（不推荐，不满足 O(log n)）
+    private void backtrack(char[][] board, int row) {
+        if (row == board.length) {
+            result.add(construct(board));
+            return;
+        }
 
-```java
-// 虽然简单，但时间复杂度是 O(n)，不满足要求
-class Solution {
-    public int searchInsert(int[] nums, int target) {
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] >= target) {
-                return i;
+        for (int col = 0; col < board.length; col++) {
+            if (isValid(board, row, col)) {
+                board[row][col] = 'Q';
+                backtrack(board, row + 1);
+                board[row][col] = '.';
             }
         }
-        return nums.length;
+    }
+
+    // 合法性检查
+    private boolean isValid(char[][] board, int row, int col) {
+        // 检查同列（只需检查当前行之前的行）
+        for (int i = 0; i < row; i++) {
+            if (board[i][col] == 'Q') return false;
+        }
+
+        // 检查左上对角线
+        for (int i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+            if (board[i][j] == 'Q') return false;
+        }
+
+        // 检查右上对角线
+        for (int i = row - 1, j = col + 1; i >= 0 && j < board.length; i--, j++) {
+            if (board[i][j] == 'Q') return false;
+        }
+
+        return true;
+    }
+
+    private List<String> construct(char[][] board) {
+        List<String> list = new ArrayList<>();
+        for (char[] row : board) {
+            list.add(new String(row));
+        }
+        return list;
     }
 }
 ```
@@ -146,164 +222,175 @@ class Solution {
 
 | 复杂度 | 说明 |
 |--------|------|
-| **时间复杂度** | O(log n)，每次搜索范围减半 |
-| **空间复杂度** | O(1)，只用了几个指针变量 |
+| **时间复杂度** | O(n!)，每行最多 n 个选择，但有合法性剪枝 |
+| **空间复杂度** | O(n)，递归栈深度 + board 存储 |
 
 ---
 
-## 详细图解
+## 回溯树状图（以 n=4 为例）
 
-### 示例：nums = [1,3,5,6], target = 2
-
-```
-初始状态：
-left = 0, right = 3
-
-第1轮：
-mid = (0 + 3) / 2 = 1
-nums[1] = 3 > 2 → right = 0
-
-    [1, 3, 5, 6]
-      ↑     ↑
-    left  right(mid)
-
-第2轮：
-left = 0, right = 0
-mid = 0
-nums[0] = 1 < 2 → left = 1
-
-    [1, 3, 5, 6]
-          ↑  ↑
-       left(right)
-
-第3轮：
-left = 1, right = 0
-left > right → 循环结束
-
-返回 left = 1
-```
-
-### 示例：nums = [1,3,5,6], target = 5
+### 棋盘状态
 
 ```
-第1轮：
-left=0, right=3, mid=1
-nums[1]=3 < 5 → left=2
+行0: [0,0] [0,1] [0,2] [0,3]
+行1: [1,0] [1,1] [1,2] [1,3]
+行2: [2,0] [2,1] [2,2] [2,3]
+行3: [3,0] [3,1] [3,2] [3,3]
+```
 
-    [1, 3, 5, 6]
-          ↑  ↑
-       mid  left
+### 回溯过程
 
-第2轮：
-left=2, right=3, mid=2
-nums[2]=5 == 5 → return 2 ✅
+```
+                    "" (空棋盘)
+                    │
+         ┌──────────┼──────────┬───────────┐
+         ▼          ▼          ▼           ▼
+       [0,0]Q    [0,1]Q    [0,2]Q     [0,3]Q
+         │          │          │           │
+      ┌──┴──┐    ┌──┴──┐    ┌──┴──┐     ┌──┴──┐
+      ▼     ▼    ▼     ▼    ▼     ▼     ▼     ▼
+    [1,1]  ❌   [1,0]  ❌   ❌  [1,3]  ❌  [1,1]
+      │          │          │           │
+    ┌─┴─┐      ┌─┴─┐      ┌─┴─┐       ┌─┴─┐
+    ▼   ▼      ▼   ▼      ▼   ▼       ▼   ▼
+  [2,2] ❌    ❌  [2,3]  [2,0] ❌    ❌  [2,2]
+    │          │          │           │
+  ┌─┴─┐      ┌─┴─┐      ┌─┴─┐       ┌─┴─┐
+  ▼   ▼      ▼   ▼      ▼   ▼       ▼   ▼
+[3,3]❌  ══  [3,1]Q ✅  ❌  [3,3]Q ✅ ══  [3,0]Q ✅
+        剪枝                剪枝
+
+最终得到2个解（见下方）
+```
+
+### 解决方案可视化
+
+```
+解法1:                    解法2:
+. Q . .                  . . Q .
+. . . Q                  Q . . .
+Q . . .                  . . . Q
+. . Q .                  . Q . .
 ```
 
 ---
 
-## 二分查找模板总结
+## 对角线判断的数学原理
 
-### 模板一：找目标值（存在返回索引，不存在返回 -1）
+### 主对角线（从左上到右下）
+
+```
+特点：row - col 是常数
+(0,0) → 0    (0,0)
+(1,1) → 0    (1,1)  → 同一对角线
+(2,2) → 0    (2,2)
+(3,3) → 0    (3,3)
+```
+
+### 副对角线（从右上到左下）
+
+```
+特点：row + col 是常数
+(0,3) → 3    (0,3)
+(1,2) → 3    (1,2)  → 同一对角线
+(2,1) → 3    (2,1)
+(3,0) → 3    (3,0)
+```
+
+因此用 `row - col` 和 `row + col` 可以唯一标识对角线。
+
+---
+
+## 关键点总结
+
+### 1. 回溯三要素
 
 ```java
-int binarySearch(int[] nums, int target) {
-    int left = 0, right = nums.length - 1;
+// 1. 做选择
+board[row][col] = 'Q';
+cols.add(col);
 
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
+// 2. 递归
+backtrack(board, row + 1);
 
-        if (nums[mid] == target) {
-            return mid;
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
+// 3. 撤销
+board[row][col] = '.';
+cols.remove(col);
+```
+
+### 2. 剪枝条件
+
+```java
+if (cols.contains(col)) continue;       // 同列有皇后
+if (diag1.contains(row + col)) continue; // 主对角线冲突
+if (diag2.contains(row - col)) continue; // 副对角线冲突
+```
+
+### 3. 为什么用 HashSet 更优？
+
+省去每次递归都检查三个方向的 O(n) 复杂度，变成 O(1) 的查询。
+
+### 4. N皇后 vs 其他回溯题
+
+| 题目 | 搜索结构 | 选择方式 |
+|------|----------|----------|
+| 括号生成 | 一维树 | 选左/右 |
+| 单词搜索 | 二维网格 | 四个方向 |
+| 分割回文串 | 一维字符串 | 切多长 |
+| **N皇后** | **二维棋盘** | **每行选一列** |
+
+---
+
+## 变形题目
+
+### 1. N皇后 II（只返回数量）
+
+```java
+// 只需计数，不需要存储具体方案
+private int count = 0;
+
+private void backtrack(...) {
+    if (row == n) {
+        count++;
+        return;
     }
-
-    return -1;  // 没找到
+    // ...
 }
 ```
 
-### 模板二：找插入位置（本题适用）
+### 2. 有效的数独（检查数独是否合法）
 
 ```java
-int searchInsert(int[] nums, int target) {
-    int left = 0, right = nums.length - 1;
-
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-
-        if (nums[mid] == target) {
-            return mid;
-        } else if (nums[mid] < target) {
-            left = mid + 1;
-        } else {
-            right = mid - 1;
-        }
-    }
-
-    return left;  // 返回 left，不是 -1
-}
-```
-
----
-
-## 易错点
-
-### 1. 整数溢出
-
-```java
-// 错误：可能溢出
-int mid = (left + right) / 2;
-
-// 正确：使用这种方式
-int mid = left + (right - left) / 2;
-```
-
-### 2. 循环条件
-
-```java
-// 模板一（找目标）：left <= right
-while (left <= right)
-
-// 模板二（找插入）：left <= right，最后 return left
-while (left <= right)
-// ...
-return left;
-```
-
-### 3. 更新边界
-
-```java
-// 错误：容易死循环
-left = mid;
-right = mid;
-
-// 正确：
-left = mid + 1;
-right = mid - 1;
+// 思想类似：检查行、列、3x3宫格是否有重复
 ```
 
 ---
 
 ## 总结
 
-**核心思想**：在有序数组中，使用二分查找定位目标或插入位置。
-
-**关键点**：
-1. 循环条件 `left <= right`
-2. 更新边界 `mid + 1` 和 `mid - 1`
-3. 找不到时返回 `left`
-
-**模板记忆**：
+N皇后的**核心思路**：
 
 ```
-left=0, right=n-1
-while(left <= right):
-    mid = left + (right-left)/2
-    if 等于: return mid
-    if 小于: left = mid + 1
-    if 大于: right = mid - 1
-return left
+1. 每行必然有一个皇后
+2. 只需决定每行的皇后放在哪列
+3. 用 row - col 和 row + col 判断对角线冲突
+4. 回溯：放 → 递归 → 撤销
+```
+
+**模板**：
+```java
+void backtrack(board, row) {
+    if (row == n) {
+        result.add(construct(board));
+        return;
+    }
+
+    for (col in 0..n-1) {
+        if (isValid(board, row, col)) {
+            board[row][col] = 'Q';
+            backtrack(board, row + 1);
+            board[row][col] = '.';
+        }
+    }
+}
 ```
