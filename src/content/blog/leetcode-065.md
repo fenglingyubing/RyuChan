@@ -2,10 +2,14 @@
 title: N 皇后
 description: leetcode刷题第三十八天
 pubDate: 2026-04-24T21:37
-image: /images/leetcode-065/c9e94bd559ecd12f.webp
+image: /images/leetcode-065/41a7e9a9a4bdd5c8.webp
 draft: false
-tags: []
-categories: []
+tags:
+  - LeetCode
+  - 感悟
+categories:
+  - LeetCode
+badge: ''
 ---
 # 51. N 皇后
 
