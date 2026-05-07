@@ -2,12 +2,14 @@
 title: 数组中的第K个大的元素
 description: leetcode刷题第四十六天
 pubDate: 2026-05-06T09:42
+image: /images/leetcode-078/98f3dd6f833b6ece.webp
 draft: false
 tags:
   - LeetCode
   - 感悟
 categories:
   - LeetCode
+badge: ''
 ---
 # LeetCode #215 - 数组中的第 K 个最大元素
 
