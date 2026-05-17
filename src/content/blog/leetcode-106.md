@@ -1,314 +1,319 @@
 ---
-title: 移除元素
-description: ''
-pubDate: 2026-05-17T12:24
-image: /images/leetcode-106/766a304988c08aac.webp
+title: 删除有序数组的重复项
+description: leetcode刷题第五十七天
+pubDate: 2026-05-17T12:41
+image: /images/leetcode-106/cbd4fe64dc921997.webp
 draft: false
-tags: []
-categories: []
+tags:
+  - LeetCode
+  - 感悟
+categories:
+  - LeetCode
 ---
-# 27. 移除元素
+# 26. 删除有序数组中的重复项
 
 ## 题目描述
 
-给定一个整数数组 `nums` 和一个整数 `val`。
+给定一个非严格递增排列的数组 `nums`。
 
 要求：
 
-> 原地移除数组中所有等于 `val` 的元素，并返回剩余元素的数量。
+> 原地删除重复出现的元素，使每个元素只出现一次，并返回删除后数组的新长度。
 
-假设数组中不等于 `val` 的元素数量是 `k`，那么需要保证：
+假设去重后的唯一元素数量是 `k`，那么需要保证：
 
-- `nums` 的前 `k` 个元素都不等于 `val`
-- 前 `k` 个元素的顺序可以改变
+- `nums` 的前 `k` 个元素是去重后的结果
+- 每个元素只出现一次
+- 元素的相对顺序必须保持一致
 - `nums` 后面的元素不重要
 - 返回 `k`
 
 ---
 
-## 一、你的解法思路
+## 一、这题和 27 题的区别
 
-你的代码是：
-
-```java
-class Solution {
-    public int removeElement(int[] nums, int val) {
-        int left = 0;
-        int right = nums.length - 1;
-        while(left <= right){
-            if (nums[left] == val){
-                swap(nums, left, right);
-                right--;
-            }else{
-                left++;
-            }
-        }
-
-        return nums.length - right + 1;
-    }
-
-    private void swap(int[] nums, int left, int right){
-        int temp = nums[left];
-        nums[left] = nums[right];
-        nums[right] = temp;
-    }
-}
-```
-
-这个思路本身是可以的。
-
-因为题目说：
+27 题「移除元素」说：
 
 > 元素的顺序可以改变。
 
-所以可以用左右指针：
+所以可以把要删除的元素交换到数组后面。
 
-- `left` 从左往右找等于 `val` 的元素
-- `right` 从右往左表示当前可交换的位置
-- 如果 `nums[left] == val`，就把它换到右边
-- 如果 `nums[left] != val`，说明这个元素应该保留，`left++`
+但这题明确要求：
+
+> 元素的相对顺序应该保持一致。
+
+因此不能随便交换元素。
+
+例如：
+
+```text
+nums = [1, 1, 2]
+```
+
+去重后应该是：
+
+```text
+[1, 2]
+```
+
+不能把顺序打乱。
 
 ---
 
-## 二、你的代码哪里不对
+## 二、利用数组有序这个条件
 
-问题出在返回值：
+题目给的数组是非严格递增的，也就是有序数组。
 
-```java
-return nums.length - right + 1;
-```
+这意味着：
 
-这个返回值不对。
+> 相同的元素一定是连续出现的。
 
-循环结束时，一定满足：
+例如：
 
 ```text
-left > right
+[0, 0, 1, 1, 1, 2, 2, 3]
 ```
 
-此时数组大致被分成两部分：
+重复的 `0`、`1`、`2` 都挨在一起。
 
-```text
-[0 ... right]          不等于 val 的元素
-[right + 1 ... end]    被移除的元素或不重要的元素
-```
-
-所以不等于 `val` 的元素数量应该是：
-
-```java
-right + 1
-```
-
-也可以返回：
-
-```java
-left
-```
-
-因为循环结束时 `left == right + 1`。
+所以只要判断当前元素是否和上一个保留下来的元素相同，就能知道它是不是重复元素。
 
 ---
 
-## 三、错误示例
+## 三、快慢指针思路
 
-以这个用例为例：
+使用两个指针：
 
-```text
-nums = [3, 2, 2, 3]
-val = 3
+- `slow`：指向下一个应该写入唯一元素的位置
+- `fast`：从左到右遍历数组
+
+因为第一个元素一定是唯一元素，所以可以先保留 `nums[0]`。
+
+然后从 `fast = 1` 开始遍历。
+
+如果：
+
+```java
+nums[fast] != nums[slow - 1]
 ```
 
-执行过程：
+说明 `nums[fast]` 是一个新的数字，应该写入 `nums[slow]`。
 
-```text
-left = 0, right = 3
-nums[left] = 3，需要移除
-交换 nums[0] 和 nums[3]
-right--
+写入后：
+
+```java
+slow++;
 ```
 
-数组还是：
+最后 `slow` 就是唯一元素的数量。
+
+---
+
+## 四、示例过程
+
+以这个数组为例：
 
 ```text
-[3, 2, 2, 3]
+nums = [0, 0, 1, 1, 1, 2, 2, 3]
 ```
 
-继续：
+初始状态：
 
 ```text
-left = 0, right = 2
-nums[left] = 3，需要移除
-交换 nums[0] 和 nums[2]
-right--
+slow = 1
+fast = 1
+```
+
+`slow = 1` 表示：
+
+```text
+nums[0] 已经保留
+下一个唯一元素应该写到 nums[1]
+```
+
+遍历过程：
+
+```text
+fast = 1，nums[1] = 0，和 nums[slow - 1] = nums[0] = 0 相同，跳过
+fast = 2，nums[2] = 1，和 nums[0] = 0 不同，写入 nums[1]
 ```
 
 数组变成：
 
 ```text
-[2, 2, 3, 3]
+[0, 1, 1, 1, 1, 2, 2, 3]
 ```
 
 继续：
 
 ```text
-left = 0, right = 1
-nums[left] = 2，不需要移除
-left++
+fast = 3，nums[3] = 1，和 nums[1] = 1 相同，跳过
+fast = 4，nums[4] = 1，和 nums[1] = 1 相同，跳过
+fast = 5，nums[5] = 2，和 nums[1] = 1 不同，写入 nums[2]
+```
+
+数组前面变成：
+
+```text
+[0, 1, 2, 1, 1, 2, 2, 3]
 ```
 
 继续：
 
 ```text
-left = 1, right = 1
-nums[left] = 2，不需要移除
-left++
+fast = 6，nums[6] = 2，和 nums[2] = 2 相同，跳过
+fast = 7，nums[7] = 3，和 nums[2] = 2 不同，写入 nums[3]
 ```
 
-循环结束：
+最终数组前半部分是：
 
 ```text
-left = 2
-right = 1
+[0, 1, 2, 3]
 ```
 
-正确答案应该是：
+返回：
 
 ```text
-k = 2
+k = 4
 ```
-
-但是你的返回值是：
-
-```java
-nums.length - right + 1
-= 4 - 1 + 1
-= 4
-```
-
-所以会返回错误结果。
 
 ---
 
-## 四、修正后的 Java 代码
+## 五、Java 代码
 
 ```java
 class Solution {
-    public int removeElement(int[] nums, int val) {
-        int left = 0;
-        int right = nums.length - 1;
+    public int removeDuplicates(int[] nums) {
+        int slow = 1;
 
-        while (left <= right) {
-            if (nums[left] == val) {
-                swap(nums, left, right);
-                right--;
-            } else {
-                left++;
+        for (int fast = 1; fast < nums.length; fast++) {
+            if (nums[fast] != nums[slow - 1]) {
+                nums[slow] = nums[fast];
+                slow++;
             }
         }
 
-        return left;
-    }
-
-    private void swap(int[] nums, int left, int right) {
-        int temp = nums[left];
-        nums[left] = nums[right];
-        nums[right] = temp;
+        return slow;
     }
 }
 ```
 
 ---
 
-## 五、为什么返回 `left`
+## 六、代码解释
 
-循环结束后：
-
-```text
-left = 不等于 val 的元素数量
+```java
+int slow = 1;
 ```
 
-例如最终数组是：
+因为数组长度至少为 `1`，第一个元素一定要保留。
 
-```text
-[2, 2, 3, 3]
+所以 `slow` 从 `1` 开始，表示下一个唯一元素应该写入的位置。
+
+```java
+for (int fast = 1; fast < nums.length; fast++)
 ```
 
-前两个元素是不等于 `val` 的有效元素：
+`fast` 从第二个元素开始遍历。
 
-```text
-[2, 2]
+判断：
+
+```java
+if (nums[fast] != nums[slow - 1])
 ```
 
-所以：
+这里比较的是当前元素和上一个保留下来的元素。
 
-```text
-left = 2
+如果不相等，说明当前元素是新的唯一元素。
+
+于是写入：
+
+```java
+nums[slow] = nums[fast];
 ```
 
-返回 `left` 就是返回有效元素个数。
+然后移动 `slow`：
+
+```java
+slow++;
+```
+
+最后返回：
+
+```java
+return slow;
+```
+
+因为 `slow` 正好等于唯一元素的数量。
 
 ---
 
-## 六、能不能返回 `right + 1`
+## 七、为什么不用额外数组
 
-也可以。
+题目要求原地删除重复元素。
 
-因为循环结束时：
+所以不能创建一个新数组保存答案。
 
-```text
-left = right + 1
-```
+这道题的做法本质上是：
 
-所以这两种写法等价：
+> 在原数组前面重新写入去重后的结果。
 
-```java
-return left;
-```
-
-```java
-return right + 1;
-```
-
-更推荐返回 `left`，因为 `left` 的含义更直观：
-
-> 前 `left` 个元素都是保留下来的元素。
+数组后面的内容不重要，不需要清理。
 
 ---
 
-## 七、复杂度分析
+## 八、边界情况
+
+### 情况一：没有重复元素
+
+```text
+nums = [1, 2, 3]
+```
+
+每个元素都会被保留，最终返回：
+
+```text
+3
+```
+
+### 情况二：全部元素都相同
+
+```text
+nums = [1, 1, 1]
+```
+
+只有第一个 `1` 会被保留，最终返回：
+
+```text
+1
+```
+
+---
+
+## 九、复杂度分析
 
 - 时间复杂度：`O(n)`
 - 空间复杂度：`O(1)`
 
-整个过程只使用了两个指针，并且在原数组上修改。
+只遍历数组一次，并且只使用了两个指针。
 
 ---
 
-## 八、总结
+## 十、总结
 
-你的双指针交换思路是正确的。
+这题的关键是利用数组有序：
 
-错误点只有一个：
+> 重复元素一定连续出现。
 
-```java
-return nums.length - right + 1;
-```
+所以只需要判断当前元素是否和上一个保留下来的元素相同。
 
-应该改成：
+核心代码是：
 
 ```java
-return left;
+if (nums[fast] != nums[slow - 1]) {
+    nums[slow] = nums[fast];
+    slow++;
+}
 ```
 
-或者：
-
-```java
-return right + 1;
-```
-
-这题的关键是理解循环结束后的数组区间：
-
-```text
-[0 ... left - 1]       保留下来的元素
-[left ... end]         不重要的元素
-```
+最终 `slow` 就是去重后数组的新长度。
