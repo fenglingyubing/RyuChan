@@ -8,7 +8,8 @@ tags:
   - MySQL
   - 八股
 categories:
-  - LeetCode
+  - 八股
+badge: ''
 ---
 
 # MySQL 常见面试题总结
